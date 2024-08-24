@@ -15,6 +15,12 @@
 # Use the latest AWS Lambda Python runtime as the base image
 FROM public.ecr.aws/lambda/python:3.12-x86_64 AS builder
 
+# Set a docker label to enable container to use SAGEMAKER_BIND_TO_PORT environment variable if present
+LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
+
+ENV PATH="/opt/python:/opt/python/site-packages:${PATH}"
+ENV SAGEMAKER_BIND_TO_PORT=9002
+
 # Set the working directory in the container
 WORKDIR /var/task
 
@@ -57,8 +63,6 @@ RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
     find /opt/python -type f -name '*.pyc' -delete && \
     find /opt/python -type f -name '*.pyo' -delete && \
     find /opt/python -type d -name 'tests' -exec rm -rf {} +
-
-ENV PATH="/opt/python:/opt/python/site-packages:${PATH}"
 
 # Set the CMD to the Lambda handler
 CMD ["python", "/opt/python/inference.py"]
