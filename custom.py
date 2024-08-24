@@ -5,12 +5,12 @@ os.environ['WORKSPACE'] = '/tmp'
 os.environ['SKIP_TORCH'] = '1'
 os.environ['WINDOW_BACKEND'] = 'headless'
 
+# Apply symlink patch
+import symlink_patch
+
 import json
 from DepthFlow import DepthScene
 from ShaderFlow.Message import ShaderMessage
-
-# Apply symlink patch
-import symlink_patch
 
 class CustomLambdaScene(DepthScene):
     def update(self):
