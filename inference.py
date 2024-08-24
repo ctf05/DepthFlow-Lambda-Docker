@@ -81,7 +81,7 @@ def predict_fn(input_data, model):
 
     model.input(image=image_bytes, depth=depth_bytes)
     output_path = "/tmp/output.mp4"
-    model.main(output=output_path, fps=40, time=8, ssaa=1, quality=100)
+    model.main(output=output_path, fps=40, time=6, ssaa=1, quality=20)
 
     # Upload to S3
     bucket_name = 'bucketab3e5-master'

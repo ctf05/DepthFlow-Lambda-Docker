@@ -59,7 +59,6 @@ RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
     find /opt/python -type d -name 'tests' -exec rm -rf {} +
 
 ENV PATH="/opt/python:/opt/python/site-packages:${PATH}"
-ENV SAGEMAKER_BIND_TO_PORT=9002
 
 # Set the CMD to the Lambda handler
 CMD ["python", "/opt/python/inference.py"]
