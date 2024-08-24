@@ -80,7 +80,8 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
 
 def lambda_handler(event, context):
     try:
-        body = json.loads(event.get('body', '{}'))
+        body = event.get('body', {})
+
         image_base64 = body.get('image')
         depth_base64 = body.get('depth')
 

@@ -51,7 +51,8 @@ def process_scene(image_bytes, depth_bytes):
 
 def lambda_handler(event, context):
     try:
-        body = json.loads(event.get('body', '{}'))
+        body = event.get('body', {})
+
         image_base64 = body.get('image')
         depth_base64 = body.get('depth')
 

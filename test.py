@@ -13,10 +13,10 @@ class TestLambdaHandler:
 
     def create_test_event(self):
         return {
-            'body': json.dumps({
-                'image': self.encode_image(self.test_image_path),
-                'depth': self.encode_image(self.test_depth_path)
-            })
+            "body": {
+                "image": self.encode_image(self.test_image_path),
+                "depth": self.encode_image(self.test_depth_path)
+            }
         }
 
     def run_test(self):
