@@ -1,3 +1,17 @@
+# Commands:
+# docker build -t depth-flow-docker-lambda .
+# aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 181172696166.dkr.ecr.us-east-2.amazonaws.com
+# docker tag depth-flow-docker-lambda:latest 181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest
+# docker push 181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest
+
+# Create Lambda: Use the webui, its easier
+# aws lambda create-function --function-name depth-flow-docker-lambda --package-type Image --code ImageUri=181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest --role arn:aws:iam::181172696166:role/lomeawsLambdaRole18e25170-master
+
+# Update Lambda:
+# aws lambda update-function-code --function-name depth-flow-docker-lambda --image-uri 181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest
+
+# Used to create the ECR docker image for lambda
+
 # Use the latest AWS Lambda Python runtime as the base image
 FROM public.ecr.aws/lambda/python:3.12-x86_64 AS builder
 
@@ -17,14 +31,14 @@ RUN dnf update -y && \
 
 # Clone your Git repository and copy only custom.py
 RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git . && \
-    mkdir -p /opt/python && \
+    mkdir -p /opt/python/site-packages && \
     cp custom.py symlink_patch.py requirements.txt /opt/python/
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install \
     --no-cache-dir \
-    --target=/opt/python \
+    --target=/opt/python/site-packages \
     --upgrade \
     -r /opt/python/requirements.txt
 

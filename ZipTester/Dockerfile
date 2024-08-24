@@ -3,6 +3,8 @@
 # docker build -t lambda-layer-builder .
 # docker run --rm -v %cd%:/opt lambda-layer-builder
 
+# This is useful for testing the Lambda layer in a more accurate environment of AWS Lambda before using the DockerLambda/Dockerfile
+
 # Use the latest AWS Lambda Python runtime as the base image
 FROM public.ecr.aws/lambda/python:3.12-x86_64 AS builder
 
