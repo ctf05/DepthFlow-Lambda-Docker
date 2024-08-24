@@ -5,8 +5,13 @@ os.environ['WORKSPACE'] = '/tmp'
 os.environ['SKIP_TORCH'] = '1'
 os.environ['WINDOW_BACKEND'] = 'headless'
 
-ffmpeg_dir = '/opt/python'  # Adjust this path if ffmpeg is located elsewhere
-os.environ['PATH'] = f"{ffmpeg_dir}:{os.environ.get('PATH', '')}"
+site_packages_dir = r'C:\Users\chris\IdeaProjects\DepthFlow-Lambda-Docker\site-packages'
+os.environ['PATH'] = f"{site_packages_dir}:{os.environ.get('PATH', '')}"
+
+import sys
+
+os.environ['PYTHONPATH'] = f"{site_packages_dir}:{os.environ.get('PYTHONPATH', '')}"
+sys.path.append(site_packages_dir)
 
 # Apply symlink patch
 import symlink_patch
