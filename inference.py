@@ -14,6 +14,7 @@ import sys
 
 os.environ['PYTHONPATH'] = f"{site_packages_dir}:{os.environ.get('PYTHONPATH', '')}"
 sys.path.append(site_packages_dir)
+os.environ['SAGEMAKER_BIND_TO_PORT'] = '9002'
 
 # Apply symlink patch
 import symlink_patch
