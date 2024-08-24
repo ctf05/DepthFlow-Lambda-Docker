@@ -29,19 +29,19 @@ RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git . && \
 RUN pip install --upgrade pip && \
     pip install \
     --no-cache-dir \
-    --platform manylinux2014_x86_64 \
     --target=/opt/python \
-    --implementation cp \
-    --python-version 3.10 \
-    --only-binary=:all: \
     --upgrade \
-    -r requirements.txt
+    -r /opt/python/requirements.txt
 
 # Download and install FFmpeg
 RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz && \
     tar xJf ffmpeg-release-amd64-static.tar.xz && \
     mv ffmpeg-*-amd64-static/ffmpeg /opt/python/ && \
     rm -rf ffmpeg-release-amd64-static*
+
+# Copy contents of /usr/lib64 to /opt/python/usr/lib64
+RUN mkdir -p /opt/python/usr/lib64 && \
+    cp -r /usr/* /opt/python/usr/
 
 # Remove unnecessary files
 RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
@@ -50,7 +50,7 @@ RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
     find /opt/python -type d -name 'tests' -exec rm -rf {} +
 
 # Run the dev import
-RUN python -c "import sys; sys.path.append('/opt/python'); from DepthFlow import DepthScene; from custom import CustomLambdaScene; print('Import successful on dev branch!'); scene = CustomLambdaScene(backend='headless'); print('CustomLambdaScene initialized successfully!')"
+RUN python -c "import sys; sys.path.append('/opt/python'); from custom import CustomLambdaScene; print('Import successful on dev branch!'); scene = CustomLambdaScene(backend='headless'); print('CustomLambdaScene initialized successfully!')"
 
 # Create the ZIP file with maximum compression
 RUN cd /opt && zip -r9 /tmp/lambda-layer.zip python
@@ -70,8 +70,11 @@ COPY --from=builder /tmp/lambda-layer.zip /tmp/lambda-layer.zip
 # Unzip the Lambda layer to /opt
 RUN unzip /tmp/lambda-layer.zip -d /opt && rm /tmp/lambda-layer.zip
 
+ENV LD_LIBRARY_PATH=/opt/python/usr/lib64:/opt/python/usr/lib:$LD_LIBRARY_PATH
+ENV PATH=/opt/python/usr/bin:$PATH
+
 # Run the test import
-RUN python -c "import sys; sys.path.append('/opt/python'); from DepthFlow import DepthScene; from custom import CustomLambdaScene; print('Import successful on test branch!'); scene = CustomLambdaScene(backend='headless'); print('CustomLambdaScene initialized successfully!')"
+RUN python -c "import sys; sys.path.append('/opt/python'); from custom import CustomLambdaScene; print('Import successful on test branch!'); scene = CustomLambdaScene(backend='headless'); print('CustomLambdaScene initialized successfully!')"
 
 # Use a minimal base image for the final stage
 FROM alpine:latest

@@ -12,12 +12,9 @@ os.environ['PATH'] = f"{ffmpeg_dir}:{os.environ.get('PATH', '')}"
 import symlink_patch
 
 import json
-import base64
-import boto3
-import uuid
-from botocore.exceptions import ClientError
 from DepthFlow import DepthScene
 from ShaderFlow.Message import ShaderMessage
+import base64
 from DepthFlow.Motion import Components, Presets, Target
 
 class CustomLambdaScene(DepthScene):
@@ -47,30 +44,6 @@ def process_scene(image_bytes, depth_bytes):
     scene.main(output=output_path, fps=40, time=8, ssaa=1, quality=100)
     return output_path
 
-def upload_to_s3(file_path, bucket_name, object_name=None):
-    if object_name is None:
-        object_name = f"public/{uuid.uuid4()}.mp4"
-
-    s3_client = boto3.client('s3')
-    try:
-        s3_client.upload_file(file_path, bucket_name, object_name)
-    except ClientError as e:
-        print(f"Error uploading file to S3: {str(e)}")
-        return None
-    return object_name
-
-def generate_presigned_url(bucket_name, object_name, expiration=3600):
-    s3_client = boto3.client('s3')
-    try:
-        response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket_name,
-                                                            'Key': object_name},
-                                                    ExpiresIn=expiration)
-    except ClientError as e:
-        print(f"Error generating presigned URL: {str(e)}")
-        return None
-    return response
-
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get('body', '{}'))
@@ -86,24 +59,11 @@ def lambda_handler(event, context):
 
         output_path = process_scene(image_bytes, depth_bytes)
 
-        # Upload to S3
-        bucket_name = 'bucketab3e5-master'
-        s3_object_key = upload_to_s3(output_path, bucket_name)
-
-        if not s3_object_key:
-            raise Exception("Failed to upload file to S3")
-
-        # Generate presigned URL
-        presigned_url = generate_presigned_url(bucket_name, s3_object_key)
-
-        if not presigned_url:
-            raise Exception("Failed to generate presigned URL")
-
         return {
             'statusCode': 200,
             'body': json.dumps({
                 'message': 'Processing complete',
-                'video_url': presigned_url
+                'output': output_path
             })
         }
     except Exception as e:
