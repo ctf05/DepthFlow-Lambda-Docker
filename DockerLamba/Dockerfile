@@ -1,5 +1,5 @@
 # Commands:
-# docker build -t depth-flow-docker-lambda .
+# docker build --no-cache -t depth-flow-docker-lambda .
 # aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 181172696166.dkr.ecr.us-east-2.amazonaws.com
 # docker tag depth-flow-docker-lambda:latest 181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest
 # docker push 181172696166.dkr.ecr.us-east-2.amazonaws.com/lome/depthflowimagecontainer:latest

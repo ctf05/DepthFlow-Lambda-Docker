@@ -46,7 +46,7 @@ def process_scene(image_bytes, depth_bytes):
     scene = CustomLambdaScene(backend='headless')
     scene.input(image=image_bytes, depth=depth_bytes)
     output_path = "/tmp/output.mp4"
-    scene.main(output=output_path, fps=40, time=8, ssaa=1, quality=100)
+    scene.main(output=output_path, fps=12, time=5, ssaa=1, quality=0, height=640, width=360)
     return output_path
 
 def lambda_handler(event, context):

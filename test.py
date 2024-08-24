@@ -4,8 +4,8 @@ from customlocaltesting import lambda_handler
 
 class TestLambdaHandler:
     def __init__(self):
-        self.test_image_path = "background1.jpg"
-        self.test_depth_path = "depth_map1.png"
+        self.test_image_path = "background.jpeg"
+        self.test_depth_path = "depth_map.png"
 
     def encode_image(self, image_path):
         with open(image_path, "rb") as image_file:
