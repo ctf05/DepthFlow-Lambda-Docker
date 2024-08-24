@@ -4,21 +4,21 @@
 # docker run --rm -v %cd%:/opt lambda-layer-builder
 
 # Use the latest AWS Lambda Python runtime as the base image
-FROM public.ecr.aws/lambda/python:3.11-x86_64 AS builder
+FROM public.ecr.aws/lambda/python:3.12-x86_64 AS builder
 
 # Set the working directory in the container
 WORKDIR /var/task
 
 # Install system dependencies and build dependencies
-RUN yum update -y && \
-    yum install -y \
+RUN dnf update -y && \
+    dnf install -y \
         git unzip wget tar gzip xz zip \
         mesa-libGL mesa-libEGL libXrandr libXi libXcursor libXinerama \
         mesa-libGLU mesa-libGL-devel mesa-libEGL-devel \
         libXrandr-devel libXi-devel libXcursor-devel libXinerama-devel \
         gcc gcc-c++ && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 # Clone your Git repository and copy only custom.py
 RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git . && \
@@ -32,7 +32,7 @@ RUN pip install --upgrade pip && \
     --platform manylinux2014_x86_64 \
     --target=/opt/python \
     --implementation cp \
-    --python-version 3.11 \
+    --python-version 3.10 \
     --only-binary=:all: \
     --upgrade \
     -r requirements.txt
@@ -56,13 +56,13 @@ RUN python -c "import sys; sys.path.append('/opt/python'); from DepthFlow import
 RUN cd /opt && zip -r9 /tmp/lambda-layer.zip python
 
 # Create a new stage for testing. This is a more accurate enviroment of AWS Lambda
-FROM public.ecr.aws/lambda/python:3.11-x86_64 AS tester
+FROM public.ecr.aws/lambda/python:3.12-x86_64 AS tester
 
-# Install system dependencies and build dependencies
-RUN yum install -y \
+# Install system dependencies
+RUN dnf install -y \
         unzip && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 # Copy zip from the builder stage
 COPY --from=builder /tmp/lambda-layer.zip /tmp/lambda-layer.zip
