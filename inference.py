@@ -14,7 +14,6 @@ import sys
 
 os.environ['PYTHONPATH'] = f"{site_packages_dir}:{os.environ.get('PYTHONPATH', '')}"
 sys.path.append(site_packages_dir)
-os.environ['SAGEMAKER_BIND_TO_PORT'] = '9002'
 
 # Apply symlink patch
 import symlink_patch
@@ -27,9 +26,7 @@ from botocore.exceptions import ClientError
 from DepthFlow import DepthScene
 from ShaderFlow.Message import ShaderMessage
 from DepthFlow.Motion import Components, Presets, Target
-import numpy as np
 from PIL import Image
-import io
 
 class CustomSageMakerScene(DepthScene):
     def setup(self):
