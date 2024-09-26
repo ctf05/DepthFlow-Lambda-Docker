@@ -6,14 +6,14 @@
 
 # Used to create the ECR docker image for sagemaker
 
-# Use the latest AWS Sagemaker runtime as the base image
-FROM public.ecr.aws/sagemaker/sagemaker-distribution:1.11-cpu AS builder
+# Use the latest AWS SageMaker runtime as the base image
+FROM python:3.9-slim AS builder
 
 # Switch to root user for installations
 USER root
 
 # Set the working directory in the container
-WORKDIR /opt/program
+WORKDIR /opt/ml/code
 
 # Install system dependencies and build dependencies
 RUN apt-get update && apt-get install -y \
@@ -24,37 +24,42 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Clone your Git repository and copy necessary files
-RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git . && \
-    mkdir -p /opt/python/site-packages && \
-    cp inference.py symlink_patch.py requirements.txt /opt/python/
+# Clone your Git repository and copy necessary files to /opt/ml/code
+RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git /tmp/repo && \
+    mkdir -p /opt/ml/code && \
+    cp /tmp/repo/inference.py /opt/ml/code/ && \
+    cp /tmp/repo/symlink_patch.py /opt/ml/code/ && \
+    cp /tmp/repo/requirements.txt /opt/ml/code/ && \
+    rm -rf /tmp/repo
 
-# Install Python dependencies
+# Create site-packages directory
+RUN mkdir -p /opt/ml/model/site-packages
+
+# Install Python dependencies in /opt/ml/code
 RUN python -m pip install --upgrade pip && \
     python -m pip install \
     --no-cache-dir \
-    --target=/opt/python/site-packages \
+    --target=/opt/ml/code/site-packages \
     --upgrade \
-    -r /opt/python/requirements.txt
+    -r /opt/ml/code/requirements.txt
 
-# Download and install FFmpeg
-RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz && \
+# Download and install FFmpeg in /opt/ml/code
+RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz --no-check-certificate && \
     tar xJf ffmpeg-release-amd64-static.tar.xz && \
-    mv ffmpeg-*-amd64-static/ffmpeg /opt/python/ && \
+    mv ffmpeg-*-amd64-static/ffmpeg /opt/ml/code/ && \
     rm -rf ffmpeg-release-amd64-static*
 
-# Copy contents of /usr to /opt/python/usr
-RUN mkdir -p /opt/python/usr && \
-    cp -r /usr/* /opt/python/usr/
+# Copy contents of /usr to /opt/ml/code/usr
+RUN mkdir -p /opt/ml/code/usr && \
+    cp -r /usr/* /opt/ml/code/usr/
 
 # Remove unnecessary files
-RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
-    find /opt/python -type f -name '*.pyc' -delete && \
-    find /opt/python -type f -name '*.pyo' -delete && \
-    find /opt/python -type d -name 'tests' -exec rm -rf {} +
+RUN find /opt/ml/code -type d -name '__pycache__' -exec rm -rf {} + && \
+    find /opt/ml/code -type f -name '*.pyc' -delete && \
+    find /opt/ml/code -type f -name '*.pyo' -delete && \
+    find /opt/ml/code -type d -name 'tests' -exec rm -rf {} +
 
 # Switch back to the default SageMaker user
 USER 1000
 
-# Set the ENTRYPOINT to the inference script
-ENTRYPOINT ["python", "/opt/python/inference.py"]
+ENTRYPOINT ["python", "/opt/ml/code/inference.py"]

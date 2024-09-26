@@ -18,16 +18,16 @@ sys.path.append(site_packages_dir)
 # Apply symlink patch
 import symlink_patch
 
-import json
-import base64
-import boto3
-import uuid
-from botocore.exceptions import ClientError
-from DepthFlow import DepthScene
-from ShaderFlow.Message import ShaderMessage
-from DepthFlow.Motion import Components, Presets, Target
-from PIL import Image
-
+#import json
+#import base64
+#import boto3
+#import uuid
+#from botocore.exceptions import ClientError
+#from DepthFlow import DepthScene
+#from ShaderFlow.Message import ShaderMessage
+#from DepthFlow.Motion import Components, Presets, Target
+#from PIL import Image
+'''
 class CustomSageMakerScene(DepthScene):
     def setup(self):
         super().setup()
@@ -41,18 +41,20 @@ class CustomSageMakerScene(DepthScene):
             start=0, end=1,
             low=1, hight=1.15
         ))
+        '''
 
-    def update(self):
-        self.animate()  # This will apply all the animations we added
+    #def update(self):
+    #    self.animate()  # This will apply all the animations we added
 
-    def handle(self, message: ShaderMessage):
-        super().handle(message)
+    #def handle(self, message: ShaderMessage):
+    #    super().handle(message)
 
 def model_fn(model_dir):
-    return CustomSageMakerScene(backend='headless')
+    return 1#CustomSageMakerScene(backend='headless')
 
 def input_fn(request_body, request_content_type):
-    if request_content_type == 'application/json':
+    return 1
+    '''if request_content_type == 'application/json':
         input_data = json.loads(request_body)
         image_base64 = input_data.get('image')
         depth_base64 = input_data.get('depth')
@@ -66,9 +68,11 @@ def input_fn(request_body, request_content_type):
         return {'image': image_bytes, 'depth': depth_bytes}
     else:
         raise ValueError(f"Unsupported content type: {request_content_type}")
+        '''
 
 def predict_fn(input_data, model):
-    if isinstance(input_data, dict):
+    return 1
+    '''if isinstance(input_data, dict):
         image_bytes = input_data['image']
         depth_bytes = input_data['depth']
     else:
@@ -94,16 +98,22 @@ def predict_fn(input_data, model):
         raise Exception("Failed to generate presigned URL")
 
     return presigned_url
+    '''
 
 def output_fn(prediction, accept):
+    return 1
+    '''
     if accept == 'application/json':
         return json.dumps({
             'message': 'Processing complete',
             'video_url': prediction
         })
     raise ValueError(f"Unsupported accept type: {accept}")
+    '''
 
 def upload_to_s3(file_path, bucket_name, object_name=None):
+    return 1
+    '''
     if object_name is None:
         object_name = f"public/{uuid.uuid4()}.mp4"
 
@@ -114,8 +124,11 @@ def upload_to_s3(file_path, bucket_name, object_name=None):
         print(f"Error uploading file to S3: {str(e)}")
         return None
     return object_name
+    '''
 
 def generate_presigned_url(bucket_name, object_name, expiration=3600):
+    return 1
+    '''
     s3_client = boto3.client('s3')
     try:
         response = s3_client.generate_presigned_url('get_object',
@@ -126,4 +139,5 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
         print(f"Error generating presigned URL: {str(e)}")
         return None
     return response
+    '''
 
