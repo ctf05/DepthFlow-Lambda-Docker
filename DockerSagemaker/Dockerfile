@@ -7,7 +7,7 @@
 # Used to create the ECR docker image for sagemaker
 
 # Use the latest AWS SageMaker runtime as the base image
-FROM python:3.9-slim AS builder
+FROM python:3.12-slim AS builder
 
 # Switch to root user for installations
 USER root

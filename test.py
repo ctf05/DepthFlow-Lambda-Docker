@@ -24,7 +24,6 @@ class TestLambdaHandler:
 
         # Create a test event
         test_event = self.create_test_event()
-        print(test_event)
 
         # Call the lambda_handler
         response = lambda_handler(test_event, None)
