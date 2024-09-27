@@ -30,9 +30,10 @@ RUN dnf update -y && \
     rm -rf /var/cache/dnf
 
 # Clone your Git repository and copy only custom.py
-RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git . && \
+RUN git clone https://github.com/ctf05/DepthFlow-Lambda-Docker.git /tmp/repo && \
     mkdir -p /opt/python/site-packages && \
-    cp custom.py symlink_patch.py requirements.txt /opt/python/
+    cp /tmp/repo/custom.py /tmp/repo/symlink_patch.py /tmp/repo/requirements.txt /opt/python/ && \
+    rm -rf /tmp/repo
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
@@ -50,7 +51,7 @@ RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.t
 
 # Copy contents of /usr/lib64 to /opt/python/usr/lib64
 RUN mkdir -p /opt/python/usr/lib64 && \
-    cp -r /usr/* /opt/python/usr/
+    cp -r /usr/lib64/* /opt/python/usr/lib64/
 
 # Remove unnecessary files
 RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
