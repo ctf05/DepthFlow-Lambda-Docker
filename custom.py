@@ -80,12 +80,13 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
 
 def lambda_handler(event, context):
     try:
-        print("event")
-        body = json.loads(event.get('body', '{}'))
+        if isinstance(event.get('body'), dict):
+            body = event['body']
+        else:
+            body = json.loads(event.get('body', '{}'))
 
         image_base64 = body.get('image')
         depth_base64 = body.get('depth')
-        print("image_base64")
 
         if not image_base64 or not depth_base64:
             raise ValueError("Both 'image' and 'depth' must be provided in the request body")
@@ -94,11 +95,7 @@ def lambda_handler(event, context):
         image_bytes = base64.b64decode(image_base64)
         depth_bytes = base64.b64decode(depth_base64)
 
-        print("image_bytes")
-
         output_path = process_scene(image_bytes, depth_bytes)
-
-        print(output_path)
 
         # Upload to S3
         bucket_name = 'bucketab3e5-master'
