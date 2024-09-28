@@ -34,11 +34,6 @@ RUN python -m pip install --upgrade pip && \
     -r /app/requirements.txt
 
 # Download and install FFmpeg in /app
-RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz --no-check-certificate && \
-    tar xJf ffmpeg-release-amd64-static.tar.xz && \
-    mv ffmpeg-*-amd64-static/ffmpeg /app/ && \
-    rm -rf ffmpeg-release-amd64-static*
-
 RUN wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz && \
     tar xJf ffmpeg-master-latest-linux64-gpl.tar.xz && \
     mv ffmpeg-master-latest-linux64-gpl/bin/ffmpeg /app/ffmpeg && \
