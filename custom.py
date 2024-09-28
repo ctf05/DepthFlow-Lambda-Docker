@@ -5,7 +5,7 @@ os.environ['WORKSPACE'] = '/tmp'
 os.environ['SKIP_TORCH'] = '1'
 os.environ['WINDOW_BACKEND'] = 'headless'
 
-ffmpeg_dir = '/opt/python'  # Adjust this path if ffmpeg is located elsewhere
+ffmpeg_dir = '/opt/python:/usr/local/bin'  # Adjust this path if ffmpeg is located elsewhere
 os.environ['PATH'] = f"{ffmpeg_dir}:{os.environ.get('PATH', '')}"
 site_packages_dir = '/opt/python/site-packages'
 os.environ['PATH'] = f"{site_packages_dir}:{os.environ.get('PATH', '')}"
