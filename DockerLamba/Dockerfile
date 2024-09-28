@@ -46,15 +46,15 @@ RUN pip install --upgrade pip && \
 # Download and install FFmpeg
 RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz && \
     tar xJf ffmpeg-release-amd64-static.tar.xz && \
-    mv ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ && \
+    mv ffmpeg-*-amd64-static/ffmpeg /opt/python/ && \
     rm -rf ffmpeg-release-amd64-static*
 
 # Ensure FFmpeg is in the PATH
 ENV PATH="/usr/local/bin:${PATH}"
 
-# Copy contents of /usr/lib64 to /opt/python/usr/lib64
+# Copy contents of /usr to /opt/python/usr
 RUN mkdir -p /opt/python/usr/lib64 && \
-    cp -r /usr/lib64/* /opt/python/usr/lib64/
+    cp -r /usr/* /opt/python/usr/
 
 # Remove unnecessary files
 RUN find /opt/python -type d -name '__pycache__' -exec rm -rf {} + && \
