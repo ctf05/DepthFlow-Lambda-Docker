@@ -2,7 +2,7 @@ import os
 
 # Set environment variables
 os.environ['WORKSPACE'] = '/tmp'
-os.environ['SKIP_TORCH'] = '1'
+#os.environ['SKIP_TORCH'] = '1'
 os.environ['WINDOW_BACKEND'] = 'headless'
 
 site_packages_dir = r'C:\Users\chris\IdeaProjects\DepthFlow-Lambda-Docker\site-packages'
