@@ -27,14 +27,27 @@ class CustomLambdaScene(DepthScene):
         super().setup()
 
         # Add animations
-        self.add_animation(Presets.Orbital(depth=0.5, intensity=0.5))
-        self.add_animation(Presets.Dolly())
-        self.add_animation(Components.Sine(target=Target.OffsetY, amplitude=0.1, cycles=2))
-        self.add_animation(Components.Linear(
-            target=Target.Zoom,
-            start=0, end=1,
-            low=1, hight=1.15
+        self.add_animation(Presets.Dolly(
+            intensity=5,
+            smooth=True,
+            loop=False,
+            depth=.3
         ))
+        self.add_animation(Components.Arc(
+            target=Target.OffsetY,
+            points=(-5, 0, 5)
+        ))
+        self.add_animation(Components.Set(
+            target=Target.Zoom,
+            value=1.12
+        ))
+        self.add_animation(Components.Cosine(
+            target=Target.OffsetX,
+            amplitude=0.6,
+            cycles=2.0,
+            phase=0.0
+        ))
+
 
     def update(self):
         self.animate()  # This will apply all the animations we added
@@ -46,7 +59,7 @@ def process_scene(image_bytes, depth_bytes):
     scene = CustomLambdaScene(backend='headless')
     scene.input(image=image_bytes, depth=depth_bytes)
     output_path = "/tmp/output.mp4"
-    scene.main(output=output_path, fps=12, time=5, ssaa=1, quality=100, height=640, width=360)
+    scene.main(output=output_path, fps=30, time=6, ssaa=2, quality=100, height=360, width=540)
     return output_path
 
 def lambda_handler(event, context):
