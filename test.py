@@ -1,11 +1,23 @@
 import json
 import base64
+
+import numpy as np
+from PIL import Image
+
 from customlocaltesting import lambda_handler
 
 class TestLambdaHandler:
     def __init__(self):
-        self.test_image_path = "pigs.jpg"
-        self.test_depth_path = "depth_map_resized_normalized.png"
+        self.test_image_path = "piggies.png"
+        self.test_depth_path = "piggiesdepthmap.png"
+
+        image = Image.open('depth_map_resized_normalized.png')  # Replace 'your_image.png' with the path to your image
+
+        # Convert the image to a NumPy array
+        image_np = np.array(image)
+
+        # Print the type of the image (NumPy array)
+        print(f"Image dtype: {image_np.dtype}")
 
     def encode_image(self, image_path):
         with open(image_path, "rb") as image_file:
